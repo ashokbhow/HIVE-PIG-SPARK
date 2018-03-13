@@ -1,0 +1,46 @@
+Q. No. 5
+Ans: It is multistep complex query. Screenshots for all queries cannot be copied. Each step are given below that one can run and prove. Only the NULL result screenshot is attached below.
+Ans: Highest rates scifi movie : Star Wars (1977), Rating 325, Occurrence 583 times in datafile. Basis for highest rating is : highest frequency i.e. how many times and not the maximum value of rating (which is 5)
+NULL: There is no scifi that has no rating or 0 rating. Minimum rating is 1 for several movies, e.g. Jumanji (also!)
+Steps: (that I did, there may be other ways too!) are as follows:
+Database name : ml, tables: ml.movies (u.item) and ml.userratings (u.data)
+(Complex query code)
+Step 1.
+create table ml.movies_2 as
+select * from ml.movies;
+Step 2. 
+show tables;
+alter table ml.movies_2 change movieid movieid1 string;
+describe ml.movies_2;
+Step 3.
+create table scifi_rating as
+select a.movieid1, a.movie_title, a.cat_scifi, b.movieid, b.rating
+from ml.movies_2 a, ml.userratings b
+where a.movieid1 = b.movieid and a.cat_scifi = 1;
+Step 4.
+describe ml.scifi_rating;
+select count (*) from ml.scifi_rating;
+select * from ml.scifi_rating
+limit 5;
+Step 6.
+create table ml.scificount as
+select movieid1, rating,
+count (*) as scifi_count
+from ml.scifi_rating
+group by movieid1, rating
+order by scifi_count desc;
+Step 7.
+Select * from ml.scificount
+Limit 10;
+Step 8.
+select a.movieid1, a.movie_title, b.movieid, b.scifi_count
+from ml.scifi_rating a, ml.scificount b
+where a.movieid1 = b.movieid1
+order by b.scifi_count desc; 
+(warning: there will be huge no of lines where highest frequency of rated film appearing thru 583 times)
+(Optional : limit thru range)
+Step 9.
+select movieid1, scifi_count
+from ml.scificount
+where scifi_count = 0;
+
